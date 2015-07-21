@@ -26,13 +26,31 @@ import org.junit.Test;
 /**
  * @author László Csontos
  */
-public class IdleThreadPoolTest extends BaseThreadDumpTest {
+public class WaitingForMonitorTest extends BaseThreadDumpTest {
 
   @Test
-  public void dumpIdleThreadPool() throws Exception {
-    semaphore.acquire();
+  public void dumpWaitingForMonitor() throws Exception {
+    readySemaphore.acquire();
 
-    String dumpFile = ThreadUtil.writeThreadDump("idle");
+    executorService.submit(new Runnable() {
+
+      @Override
+      public void run() {
+        try {
+          readySemaphore.acquire();
+        }
+        catch (InterruptedException ie) {
+          ie.printStackTrace();
+        }
+
+        synchronized (lock) { }
+      }
+
+    });
+
+    readySemaphore.release();
+
+    String dumpFile = ThreadUtil.writeThreadDump("monitor");
 
     System.out.println(dumpFile);
   }
@@ -41,18 +59,31 @@ public class IdleThreadPoolTest extends BaseThreadDumpTest {
   public void setUp() throws InterruptedException {
     super.setUp();
 
-    semaphore.acquire();
+    blockingSemaphore.acquire();
+    readySemaphore.acquire();
 
     executorService.submit(new Runnable() {
 
       @Override
       public void run() {
-        semaphore.release();
+        synchronized (lock) {
+          try {
+            readySemaphore.release();
+            blockingSemaphore.acquire();
+          }
+          catch (InterruptedException e) {
+            e.printStackTrace();
+          }
+        }
       }
 
     });
   }
 
-  private final Semaphore semaphore = new Semaphore(1);
+
+  private final Object lock = new Object();
+
+  private final Semaphore blockingSemaphore = new Semaphore(1);
+  private final Semaphore readySemaphore = new Semaphore(1);
 
 }
