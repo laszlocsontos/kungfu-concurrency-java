@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.portal.kernel.util;
+package kungfu.concurrency.threaddump;
 
 import com.liferay.portal.kernel.io.unsync.UnsyncByteArrayOutputStream;
 
@@ -29,32 +29,6 @@ import java.util.Map;
  * @author Shuyang Zhou
  */
 public class ThreadUtil {
-
-	public static Thread[] getThreads() {
-		Thread currentThread = Thread.currentThread();
-
-		ThreadGroup threadGroup = currentThread.getThreadGroup();
-
-		while (threadGroup.getParent() != null) {
-			threadGroup = threadGroup.getParent();
-		}
-
-		int threadCountGuess = threadGroup.activeCount();
-
-		Thread[] threads = new Thread[threadCountGuess];
-
-		int threadCountActual = threadGroup.enumerate(threads);
-
-		while (threadCountActual == threadCountGuess) {
-			threadCountGuess *= 2;
-
-			threads = new Thread[threadCountGuess];
-
-			threadCountActual = threadGroup.enumerate(threads);
-		}
-
-		return threads;
-	}
 
 	public static String threadDump() {
 		String threadDump = _getThreadDumpFromJstack();
