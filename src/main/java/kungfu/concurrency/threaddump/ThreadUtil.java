@@ -14,13 +14,20 @@
 
 package kungfu.concurrency.threaddump;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.io.ByteStreams;
+import com.google.common.io.Files;
 import com.google.common.primitives.Ints;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
+import java.nio.charset.Charset;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
@@ -41,6 +48,23 @@ public class ThreadUtil {
     }
 
     return "\n\n".concat(threadDump);
+  }
+
+  public static String writeThreadDump(String prefix) throws IOException {
+    DateFormat dateFormat = new SimpleDateFormat("YYYYMMDDHH24MMSS");
+
+    Joiner joiner = Joiner.on(CharPool.UNDERSCORE);
+
+    Date now = new Date();
+
+    File dumpFile = File.createTempFile(
+      joiner.join(prefix, "thread_dump", dateFormat.format(now)), null);
+
+    String threadDump = threadDump();
+
+    Files.write(threadDump, dumpFile, Charset.defaultCharset());
+
+    return dumpFile.getAbsolutePath();
   }
 
   private static String _getThreadDumpFromJstack() {

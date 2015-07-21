@@ -25,4 +25,6 @@ public interface CharPool {
 
   char AT = '@';
 
+  char UNDERSCORE = '_';
+
 }
