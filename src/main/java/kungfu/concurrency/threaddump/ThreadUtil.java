@@ -98,7 +98,7 @@ public class ThreadUtil {
 			System.getProperty("java.vm.name") + " " +
 				System.getProperty("java.vm.version");
 
-		StringBundler sb = new StringBundler(
+		StringBuilder sb = new StringBuilder(
 			"Full thread dump of " + jvm + " on " + String.valueOf(new Date()) +
 				"\n\n");
 
