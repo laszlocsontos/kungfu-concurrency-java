@@ -33,113 +33,113 @@ import kungfu.concurrency.util.StringPool;
  */
 public class ThreadUtil {
 
-	public static String threadDump() {
-		String threadDump = _getThreadDumpFromJstack();
+  public static String threadDump() {
+    String threadDump = _getThreadDumpFromJstack();
 
-		if (Strings.isNullOrEmpty(threadDump)) {
-			threadDump = _getThreadDumpFromStackTrace();
-		}
+    if (Strings.isNullOrEmpty(threadDump)) {
+      threadDump = _getThreadDumpFromStackTrace();
+    }
 
-		return "\n\n".concat(threadDump);
-	}
+    return "\n\n".concat(threadDump);
+  }
 
-	private static String _getThreadDumpFromJstack() {
-		try {
-			String vendorURL = System.getProperty("java.vendor.url");
+  private static String _getThreadDumpFromJstack() {
+    try {
+      String vendorURL = System.getProperty("java.vendor.url");
 
-			if (!vendorURL.equals("http://java.oracle.com/") &&
-				!vendorURL.equals("http://java.sun.com/")) {
+      if (!vendorURL.equals("http://java.oracle.com/") &&
+        !vendorURL.equals("http://java.sun.com/")) {
 
-				return StringPool.BLANK;
-			}
+        return StringPool.BLANK;
+      }
 
-			RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
+      RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
 
-			String name = runtimeMXBean.getName();
+      String name = runtimeMXBean.getName();
 
-			if (Strings.isNullOrEmpty(name)) {
-				return StringPool.BLANK;
-			}
+      if (Strings.isNullOrEmpty(name)) {
+        return StringPool.BLANK;
+      }
 
-			int pos = name.indexOf(CharPool.AT);
+      int pos = name.indexOf(CharPool.AT);
 
-			if (pos == -1) {
-				return StringPool.BLANK;
-			}
+      if (pos == -1) {
+        return StringPool.BLANK;
+      }
 
-			String pidString = name.substring(0, pos);
+      String pidString = name.substring(0, pos);
 
-			Integer pid = Ints.tryParse(pidString);
+      Integer pid = Ints.tryParse(pidString);
 
-			if (pid == null) {
-				return StringPool.BLANK;
-			}
+      if (pid == null) {
+        return StringPool.BLANK;
+      }
 
-			Runtime runtime = Runtime.getRuntime();
+      Runtime runtime = Runtime.getRuntime();
 
-			String[] cmd = new String[] {"jstack", pidString};
+      String[] cmd = new String[] {"jstack", pidString};
 
-			Process process = runtime.exec(cmd);
+      Process process = runtime.exec(cmd);
 
-			InputStream inputStream = process.getInputStream();
+      InputStream inputStream = process.getInputStream();
 
-			byte[] bytes = ByteStreams.toByteArray(inputStream);
+      byte[] bytes = ByteStreams.toByteArray(inputStream);
 
-			return new String(bytes);
-		}
-		catch (Exception e) {
-		}
+      return new String(bytes);
+    }
+    catch (Exception e) {
+    }
 
-		return StringPool.BLANK;
-	}
+    return StringPool.BLANK;
+  }
 
-	private static String _getThreadDumpFromStackTrace() {
-		String jvm =
-			System.getProperty("java.vm.name") + " " +
-				System.getProperty("java.vm.version");
+  private static String _getThreadDumpFromStackTrace() {
+    String jvm =
+      System.getProperty("java.vm.name") + " " +
+        System.getProperty("java.vm.version");
 
-		StringBuilder sb = new StringBuilder(
-			"Full thread dump of " + jvm + " on " + String.valueOf(new Date()) +
-				"\n\n");
+    StringBuilder sb = new StringBuilder(
+      "Full thread dump of " + jvm + " on " + String.valueOf(new Date()) +
+        "\n\n");
 
-		Map<Thread, StackTraceElement[]> stackTraces =
-			Thread.getAllStackTraces();
+    Map<Thread, StackTraceElement[]> stackTraces =
+      Thread.getAllStackTraces();
 
-		for (Map.Entry<Thread, StackTraceElement[]> entry :
-				stackTraces.entrySet()) {
+    for (Map.Entry<Thread, StackTraceElement[]> entry :
+        stackTraces.entrySet()) {
 
-			Thread thread = entry.getKey();
-			StackTraceElement[] elements = entry.getValue();
+      Thread thread = entry.getKey();
+      StackTraceElement[] elements = entry.getValue();
 
-			sb.append(StringPool.QUOTE);
-			sb.append(thread.getName());
-			sb.append(StringPool.QUOTE);
+      sb.append(StringPool.QUOTE);
+      sb.append(thread.getName());
+      sb.append(StringPool.QUOTE);
 
-			if (thread.getThreadGroup() != null) {
-				sb.append(StringPool.SPACE);
-				sb.append(StringPool.OPEN_PARENTHESIS);
-				sb.append(thread.getThreadGroup().getName());
-				sb.append(StringPool.CLOSE_PARENTHESIS);
-			}
+      if (thread.getThreadGroup() != null) {
+        sb.append(StringPool.SPACE);
+        sb.append(StringPool.OPEN_PARENTHESIS);
+        sb.append(thread.getThreadGroup().getName());
+        sb.append(StringPool.CLOSE_PARENTHESIS);
+      }
 
-			sb.append(", priority=");
-			sb.append(thread.getPriority());
-			sb.append(", id=");
-			sb.append(thread.getId());
-			sb.append(", state=");
-			sb.append(thread.getState());
-			sb.append("\n");
+      sb.append(", priority=");
+      sb.append(thread.getPriority());
+      sb.append(", id=");
+      sb.append(thread.getId());
+      sb.append(", state=");
+      sb.append(thread.getState());
+      sb.append("\n");
 
-			for (int i = 0; i < elements.length; i++) {
-				sb.append("\t");
-				sb.append(elements[i]);
-				sb.append("\n");
-			}
+      for (int i = 0; i < elements.length; i++) {
+        sb.append("\t");
+        sb.append(elements[i]);
+        sb.append("\n");
+      }
 
-			sb.append("\n");
-		}
+      sb.append("\n");
+    }
 
-		return sb.toString();
-	}
+    return sb.toString();
+  }
 
 }
