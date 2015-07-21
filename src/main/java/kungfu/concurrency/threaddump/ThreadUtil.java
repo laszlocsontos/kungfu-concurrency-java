@@ -14,15 +14,18 @@
 
 package kungfu.concurrency.threaddump;
 
-import com.liferay.portal.kernel.io.unsync.UnsyncByteArrayOutputStream;
+import com.google.common.base.Strings;
+import com.google.common.io.ByteStreams;
+import com.google.common.primitives.Ints;
 
 import java.io.InputStream;
-
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
-
 import java.util.Date;
 import java.util.Map;
+
+import kungfu.concurrency.util.CharPool;
+import kungfu.concurrency.util.StringPool;
 
 /**
  * @author Tina Tian
@@ -33,7 +36,7 @@ public class ThreadUtil {
 	public static String threadDump() {
 		String threadDump = _getThreadDumpFromJstack();
 
-		if (Validator.isNull(threadDump)) {
+		if (Strings.isNullOrEmpty(threadDump)) {
 			threadDump = _getThreadDumpFromStackTrace();
 		}
 
@@ -41,9 +44,6 @@ public class ThreadUtil {
 	}
 
 	private static String _getThreadDumpFromJstack() {
-		UnsyncByteArrayOutputStream outputStream =
-			new UnsyncByteArrayOutputStream();
-
 		try {
 			String vendorURL = System.getProperty("java.vendor.url");
 
@@ -57,7 +57,7 @@ public class ThreadUtil {
 
 			String name = runtimeMXBean.getName();
 
-			if (Validator.isNull(name)) {
+			if (Strings.isNullOrEmpty(name)) {
 				return StringPool.BLANK;
 			}
 
@@ -69,26 +69,28 @@ public class ThreadUtil {
 
 			String pidString = name.substring(0, pos);
 
-			if (!Validator.isNumber(pidString)) {
+			Integer pid = Ints.tryParse(pidString);
+
+			if (pid == null) {
 				return StringPool.BLANK;
 			}
 
 			Runtime runtime = Runtime.getRuntime();
 
-			int pid = GetterUtil.getInteger(pidString);
-
-			String[] cmd = new String[] {"jstack", String.valueOf(pid)};
+			String[] cmd = new String[] {"jstack", pidString};
 
 			Process process = runtime.exec(cmd);
 
 			InputStream inputStream = process.getInputStream();
 
-			StreamUtil.transfer(inputStream, outputStream);
+			byte[] bytes = ByteStreams.toByteArray(inputStream);
+
+			return new String(bytes);
 		}
 		catch (Exception e) {
 		}
 
-		return outputStream.toString();
+		return StringPool.BLANK;
 	}
 
 	private static String _getThreadDumpFromStackTrace() {
