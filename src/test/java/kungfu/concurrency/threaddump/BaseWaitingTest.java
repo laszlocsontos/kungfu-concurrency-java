@@ -26,27 +26,15 @@ import org.junit.Test;
 /**
  * @author László Csontos
  */
-public class WaitingForMonitorTest extends BaseThreadDumpTest {
+public abstract class BaseWaitingTest extends BaseThreadDumpTest {
 
   @Test
   public void dumpWaitingForMonitor() throws Exception {
     readySemaphore.acquire();
 
-    executorService.submit(new Runnable() {
+    BlockedRunnable blockedRunnable = getBlockedRunnable();
 
-      @Override
-      public void run() {
-        try {
-          readySemaphore.acquire();
-        }
-        catch (InterruptedException ie) {
-          ie.printStackTrace();
-        }
-
-        synchronized (lock) { }
-      }
-
-    });
+    executorService.submit(blockedRunnable);
 
     readySemaphore.release();
 
@@ -62,28 +50,45 @@ public class WaitingForMonitorTest extends BaseThreadDumpTest {
     blockingSemaphore.acquire();
     readySemaphore.acquire();
 
-    executorService.submit(new Runnable() {
+    BlockerRunnable blockerRunnable = getBlockerRunnable();
 
-      @Override
-      public void run() {
-        synchronized (lock) {
-          try {
-            readySemaphore.release();
-            blockingSemaphore.acquire();
-          }
-          catch (InterruptedException e) {
-            e.printStackTrace();
-          }
-        }
-      }
-
-    });
+    executorService.submit(blockerRunnable);
   }
 
+  protected abstract BlockedRunnable getBlockedRunnable() throws InterruptedException;
 
-  private final Object lock = new Object();
+  protected abstract BlockerRunnable getBlockerRunnable() throws InterruptedException;
 
-  private final Semaphore blockingSemaphore = new Semaphore(1);
-  private final Semaphore readySemaphore = new Semaphore(1);
+  protected final Semaphore blockingSemaphore = new Semaphore(1);
+  protected final Semaphore readySemaphore = new Semaphore(1);
+
+  protected class BlockerRunnable implements Runnable {
+
+    @Override
+    public void run() {
+      try {
+        readySemaphore.release();
+        blockingSemaphore.acquire();
+      }
+      catch (InterruptedException ie) {
+        ie.printStackTrace();
+      }
+    }
+
+  }
+
+  protected class BlockedRunnable implements Runnable {
+
+    @Override
+    public void run() {
+      try {
+        readySemaphore.acquire();
+      }
+      catch (InterruptedException ie) {
+        ie.printStackTrace();
+      }
+    }
+
+  }
 
 }
