@@ -47,8 +47,8 @@ public class ThreadUtil {
     try {
       String vendorURL = System.getProperty("java.vendor.url");
 
-      if (!vendorURL.equals("http://java.oracle.com/") &&
-        !vendorURL.equals("http://java.sun.com/")) {
+      if (!vendorURL.equals("http://java.oracle.com/")
+        && !vendorURL.equals("http://java.sun.com/")) {
 
         return StringPool.BLANK;
       }
@@ -86,8 +86,8 @@ public class ThreadUtil {
       byte[] bytes = ByteStreams.toByteArray(inputStream);
 
       return new String(bytes);
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
+      e.printStackTrace();
     }
 
     return StringPool.BLANK;
@@ -95,12 +95,10 @@ public class ThreadUtil {
 
   private static String _getThreadDumpFromStackTrace() {
     String jvm =
-      System.getProperty("java.vm.name") + " " +
-        System.getProperty("java.vm.version");
+      System.getProperty("java.vm.name") + " " + System.getProperty("java.vm.version");
 
     StringBuilder sb = new StringBuilder(
-      "Full thread dump of " + jvm + " on " + String.valueOf(new Date()) +
-        "\n\n");
+      "Full thread dump of " + jvm + " on " + String.valueOf(new Date()) + "\n\n");
 
     Map<Thread, StackTraceElement[]> stackTraces =
       Thread.getAllStackTraces();
@@ -130,9 +128,9 @@ public class ThreadUtil {
       sb.append(thread.getState());
       sb.append("\n");
 
-      for (int i = 0; i < elements.length; i++) {
+      for (int idx = 0; idx < elements.length; idx++) {
         sb.append("\t");
-        sb.append(elements[i]);
+        sb.append(elements[idx]);
         sb.append("\n");
       }
 
