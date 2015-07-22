@@ -18,8 +18,6 @@
 
 package kungfu.concurrency.threaddump;
 
-import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
@@ -52,8 +50,7 @@ public class DatabaseLockTest extends BaseThreadDumpTest {
       public void run() {
         try {
           sqlExecutor1.runSQL("SELECT * FROM test FOR UPDATE");
-        }
-        catch (SQLException sqle) {
+        } catch (SQLException sqle) {
           sqle.printStackTrace();
         }
       }
@@ -66,8 +63,7 @@ public class DatabaseLockTest extends BaseThreadDumpTest {
       public void run() {
         try {
           sqlExecutor2.runSQL("SELECT * FROM test FOR UPDATE");
-        }
-        catch (SQLException sqle) {
+        } catch (SQLException sqle) {
           sqle.printStackTrace();
         }
       }
@@ -143,15 +139,13 @@ public class DatabaseLockTest extends BaseThreadDumpTest {
         }
 
         processResultSet(resultSet);
-      }
-      catch (SQLException sqle) {
+      } catch (SQLException sqle) {
         if (connection != null) {
           connection.rollback();
         }
 
         sqle.printStackTrace();
-      }
-      finally {
+      } finally {
         if (resultSet != null) {
           resultSet.close();
         }
@@ -186,8 +180,7 @@ public class DatabaseLockTest extends BaseThreadDumpTest {
     void runSQL(String sql) throws SQLException {
       try {
         cyclicBarrier.await();
-      }
-      catch (Exception e) {
+      } catch (Exception e) {
         e.printStackTrace();
       }
 
@@ -197,8 +190,7 @@ public class DatabaseLockTest extends BaseThreadDumpTest {
     void acquire() {
       try {
         semaphore.acquire();
-      }
-      catch (InterruptedException ie) {
+      } catch (InterruptedException ie) {
         ie.printStackTrace();
       }
     }

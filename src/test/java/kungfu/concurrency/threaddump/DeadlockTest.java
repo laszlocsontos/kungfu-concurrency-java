@@ -57,8 +57,7 @@ public class DeadlockTest extends BaseThreadDumpTest {
       synchronized (lock1) {
         try {
           cyclicBarrier.await();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
           e.printStackTrace();
         }
 
@@ -75,8 +74,7 @@ public class DeadlockTest extends BaseThreadDumpTest {
       synchronized (lock2) {
         try {
           cyclicBarrier.await();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
           e.printStackTrace();
         }
 

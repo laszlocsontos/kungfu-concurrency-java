@@ -69,8 +69,7 @@ public abstract class BaseWaitingTest extends BaseThreadDumpTest {
       try {
         readySemaphore.release();
         blockingSemaphore.acquire();
-      }
-      catch (InterruptedException ie) {
+      } catch (InterruptedException ie) {
         ie.printStackTrace();
       }
     }
@@ -83,8 +82,7 @@ public abstract class BaseWaitingTest extends BaseThreadDumpTest {
     public void run() {
       try {
         readySemaphore.acquire();
-      }
-      catch (InterruptedException ie) {
+      } catch (InterruptedException ie) {
         ie.printStackTrace();
       }
     }
