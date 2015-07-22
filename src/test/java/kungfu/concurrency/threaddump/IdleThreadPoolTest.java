@@ -38,7 +38,7 @@ public class IdleThreadPoolTest extends BaseThreadDumpTest {
   }
 
   @Before
-  public void setUp() throws InterruptedException {
+  public void setUp() throws Exception {
     super.setUp();
 
     semaphore.acquire();

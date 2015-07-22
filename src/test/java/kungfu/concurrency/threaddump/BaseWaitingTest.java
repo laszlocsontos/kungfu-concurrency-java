@@ -44,7 +44,7 @@ public abstract class BaseWaitingTest extends BaseThreadDumpTest {
   }
 
   @Before
-  public void setUp() throws InterruptedException {
+  public void setUp() throws Exception {
     super.setUp();
 
     blockingSemaphore.acquire();

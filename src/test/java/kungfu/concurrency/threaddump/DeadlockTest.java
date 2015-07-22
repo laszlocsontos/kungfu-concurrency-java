@@ -38,7 +38,7 @@ public class DeadlockTest extends BaseThreadDumpTest {
   }
 
   @Before
-  public void setUp() throws InterruptedException {
+  public void setUp() throws Exception {
     super.setUp();
 
     executorService.submit(new Task1());
