@@ -9,12 +9,12 @@ import org.junit.Before;
 public class BaseThreadDumpTest {
 
   @Before
-  public void setUp() throws InterruptedException {
+  public void setUp() throws Exception {
     executorService = Executors.newCachedThreadPool();
   }
 
   @After
-  public void tearDown() {
+  public void tearDown() throws Exception {
     executorService.shutdown();
   }
 
